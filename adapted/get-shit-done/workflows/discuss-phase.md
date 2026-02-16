@@ -423,7 +423,7 @@ node ~/.claude/get-shit-done/bin/gsd-tools.cjs state record-session \
 Commit STATE.md:
 
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs(state): record phase ${PHASE} context session" --files "$(node gsd-tools.cjs state-path)"
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs(state): record phase ${PHASE} context session" --files "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-path)"
 ```
 </step>
 

@@ -137,65 +137,41 @@ function patchGsdTools(content) {
 
 // ─── Markdown patches ────────────────────────────────────────────────────────
 
+// Full path to gsd-tools.cjs as used in GSD's own markdown files
+const GSD_TOOLS = '~/.claude/get-shit-done/bin/gsd-tools.cjs';
+
 function patchMarkdown(content, filePath) {
   let patched = content;
   const relPath = path.relative(SOURCE, filePath);
   let changes = 0;
 
   // Replace shell cat/read commands for STATE.md with gsd-tools.cjs resolution
-  // Pattern: cat .planning/STATE.md → cat $(node gsd-tools.cjs state-path)
+  // Pattern: cat .planning/STATE.md → cat "$(node ~/.claude/.../gsd-tools.cjs state-path)"
   patched = patched.replace(
     /cat\s+\.planning\/STATE\.md(\s+2>\/dev\/null)?/g,
-    (match, devnull) => { changes++; return `cat "$(node gsd-tools.cjs state-path)"${devnull || ''}`; }
+    (match, devnull) => { changes++; return `cat "$(node ${GSD_TOOLS} state-path)"${devnull || ''}`; }
   );
 
-  // Replace @.planning/STATE.md file includes
-  // These are Claude Code's file include syntax — they resolve at prompt load time,
-  // so we can't make them dynamic. Instead, replace with a shell-based read instruction.
-  patched = patched.replace(
-    /@\.planning\/STATE\.md/g,
-    () => { changes++; return '@.planning/STATE.md'; }
-    // NOTE: @ includes can't be dynamic. We'll handle this separately — see below.
-  );
-
-  // Actually, let's reconsider @ includes. These are resolved by Claude Code before
-  // any shell runs, so they can't use $(node ...). The options are:
-  // 1. Leave them as STATE.md and rely on a symlink (STATE.md → STATE_{dev}.md)
-  // 2. Replace with a bash read instruction
-  // 3. Replace with a gsd-tools.cjs call in the prompt text
-  //
-  // Option 3 is cleanest: replace `@.planning/STATE.md` with an instruction to
-  // read via gsd-tools.cjs. But that changes the prompt semantics.
-  //
-  // For now: leave @ includes as-is. The runtime will need a STATE.md symlink
-  // pointing to the active developer's state file, OR we patch Claude Code's
-  // file resolution (out of scope). We'll revisit this in the wrapper skills.
-  //
-  // Reset the no-op replacement above:
-  // (Already a no-op — the replacement produces the same string)
+  // @.planning/STATE.md file includes — left as-is.
+  // These resolve at Claude Code prompt load time before any shell runs.
+  // /team:assign creates a symlink STATE.md → STATE_{dev}.md to make them work.
 
   // Replace --files .planning/STATE.md in commit commands
   patched = patched.replace(
     /(--files\s+(?:[^\n]*?))(\.planning\/STATE\.md)/g,
-    (match, prefix, stateRef) => { changes++; return `${prefix}"$(node gsd-tools.cjs state-path)"`; }
+    (match, prefix, stateRef) => { changes++; return `${prefix}"$(node ${GSD_TOOLS} state-path)"`; }
   );
-
-  // Replace bare .planning/STATE.md in other contexts (file checks, path refs)
-  // But NOT the ones we already handled above and NOT in prose
-  // Target: paths in code blocks, bash commands, file references
-  // This is intentionally conservative — we catch the clear path patterns above
-  // and leave ambiguous references for manual review.
 
   // Replace agent-history.json references in bash contexts
   patched = patched.replace(
     /\.planning\/agent-history\.json/g,
-    () => { changes++; return '"$(node gsd-tools.cjs agent-history-path)"'; }
+    () => { changes++; return `"$(node ${GSD_TOOLS} agent-history-path)"`; }
   );
 
   // Replace current-agent-id.txt references in bash contexts
   patched = patched.replace(
     /\.planning\/current-agent-id\.txt/g,
-    () => { changes++; return '"$(node gsd-tools.cjs current-agent-id-path)"'; }
+    () => { changes++; return `"$(node ${GSD_TOOLS} current-agent-id-path)"`; }
   );
 
   return { patched, changes, relPath };

@@ -35,7 +35,7 @@ Parse JSON for: `state_exists`, `roadmap_exists`, `project_exists`, `planning_ex
 Read and parse STATE.md, then PROJECT.md:
 
 ```bash
-cat "$(node gsd-tools.cjs state-path)"
+cat "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-path)"
 cat .planning/PROJECT.md
 ```
 

@@ -154,7 +154,7 @@ If todo was moved to done/, commit the change:
 
 ```bash
 git rm --cached .planning/todos/pending/[filename] 2>/dev/null || true
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: start work on todo - [title]" --files .planning/todos/done/[filename] "$(node gsd-tools.cjs state-path)"
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: start work on todo - [title]" --files .planning/todos/done/[filename] "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-path)"
 ```
 
 Tool respects `commit_docs` config and gitignore automatically.

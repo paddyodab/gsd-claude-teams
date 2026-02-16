@@ -592,7 +592,7 @@ git push origin v[X.Y]
 Commit milestone completion.
 
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "chore: complete v[X.Y] milestone" --files .planning/milestones/v[X.Y]-ROADMAP.md .planning/milestones/v[X.Y]-REQUIREMENTS.md .planning/milestones/v[X.Y]-MILESTONE-AUDIT.md .planning/MILESTONES.md .planning/PROJECT.md "$(node gsd-tools.cjs state-path)"
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "chore: complete v[X.Y] milestone" --files .planning/milestones/v[X.Y]-ROADMAP.md .planning/milestones/v[X.Y]-REQUIREMENTS.md .planning/milestones/v[X.Y]-MILESTONE-AUDIT.md .planning/MILESTONES.md .planning/PROJECT.md "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-path)"
 ```
 ```
 

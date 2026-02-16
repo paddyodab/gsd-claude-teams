@@ -40,7 +40,7 @@ Configuration options for `.planning/` directory behavior.
 
 ```bash
 # Commit with automatic commit_docs + gitignore checks:
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: update state" --files "$(node gsd-tools.cjs state-path)"
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: update state" --files "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-path)"
 
 # Load config via state load (returns JSON):
 INIT=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state load)
@@ -56,7 +56,7 @@ INIT=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs init execute-phase "1")
 **Commit via CLI (handles checks automatically):**
 
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: update state" --files "$(node gsd-tools.cjs state-path)"
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: update state" --files "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-path)"
 ```
 
 The CLI checks `commit_docs` config and gitignore status internally — no manual conditionals needed.

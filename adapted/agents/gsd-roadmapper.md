@@ -511,7 +511,7 @@ When files are written and returning to orchestrator:
 
 User can review actual files:
 - `cat .planning/ROADMAP.md`
-- `cat "$(node gsd-tools.cjs state-path)"`
+- `cat "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-path)"`
 
 {If gaps found during creation:}
 

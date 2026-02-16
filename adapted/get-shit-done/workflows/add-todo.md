@@ -118,7 +118,7 @@ If `.planning/STATE.md` exists:
 Commit the todo and any updated state:
 
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: capture todo - [title]" --files .planning/todos/pending/[filename] "$(node gsd-tools.cjs state-path)"
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: capture todo - [title]" --files .planning/todos/pending/[filename] "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-path)"
 ```
 
 Tool respects `commit_docs` config and gitignore automatically.

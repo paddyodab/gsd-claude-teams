@@ -83,12 +83,12 @@ Fresh context per subagent preserves peak quality. Main context stays lean.
 
 <step name="init_agent_tracking">
 ```bash
-if [ ! -f "$(node gsd-tools.cjs agent-history-path)" ]; then
-  echo '{"version":"1.0","max_entries":50,"entries":[]}' > "$(node gsd-tools.cjs agent-history-path)"
+if [ ! -f "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs agent-history-path)" ]; then
+  echo '{"version":"1.0","max_entries":50,"entries":[]}' > "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs agent-history-path)"
 fi
-rm -f "$(node gsd-tools.cjs current-agent-id-path)"
-if [ -f "$(node gsd-tools.cjs current-agent-id-path)" ]; then
-  INTERRUPTED_ID=$(cat "$(node gsd-tools.cjs current-agent-id-path)")
+rm -f "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs current-agent-id-path)"
+if [ -f "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs current-agent-id-path)" ]; then
+  INTERRUPTED_ID=$(cat "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs current-agent-id-path)")
   echo "Found interrupted agent: $INTERRUPTED_ID"
 fi
 ```
@@ -390,7 +390,7 @@ Counts PLAN vs SUMMARY files on disk. Updates progress table row with correct co
 Task code already committed per-task. Commit plan metadata:
 
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs({phase}-{plan}): complete [plan-name] plan" --files .planning/phases/XX-name/{phase}-{plan}-SUMMARY.md "$(node gsd-tools.cjs state-path)" .planning/ROADMAP.md
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs({phase}-{plan}): complete [plan-name] plan" --files .planning/phases/XX-name/{phase}-{plan}-SUMMARY.md "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-path)" .planning/ROADMAP.md
 ```
 </step>
 

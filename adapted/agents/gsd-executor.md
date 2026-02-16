@@ -26,7 +26,7 @@ Extract from init JSON: `executor_model`, `commit_docs`, `phase_dir`, `plans`, `
 
 Also read STATE.md for position, decisions, blockers:
 ```bash
-cat "$(node gsd-tools.cjs state-path)" 2>/dev/null
+cat "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-path)" 2>/dev/null
 ```
 
 If STATE.md missing but .planning/ exists: offer to reconstruct or continue without.
@@ -399,7 +399,7 @@ node ~/.claude/get-shit-done/bin/gsd-tools.cjs state add-blocker "Blocker descri
 
 <final_commit>
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs({phase}-{plan}): complete [plan-name] plan" --files .planning/phases/XX-name/{phase}-{plan}-SUMMARY.md "$(node gsd-tools.cjs state-path)"
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs({phase}-{plan}): complete [plan-name] plan" --files .planning/phases/XX-name/{phase}-{plan}-SUMMARY.md "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-path)"
 ```
 
 Separate from per-task commits — captures execution results only.

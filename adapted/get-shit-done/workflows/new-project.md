@@ -1021,7 +1021,7 @@ Use AskUserQuestion:
 **Commit roadmap (after approval or auto mode):**
 
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: create roadmap ([N] phases)" --files .planning/ROADMAP.md "$(node gsd-tools.cjs state-path)" .planning/REQUIREMENTS.md
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: create roadmap ([N] phases)" --files .planning/ROADMAP.md "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-path)" .planning/REQUIREMENTS.md
 ```
 
 ## 9. Done

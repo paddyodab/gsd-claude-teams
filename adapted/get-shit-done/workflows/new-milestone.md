@@ -71,7 +71,7 @@ Keep Accumulated Context section from previous milestone.
 Delete MILESTONE-CONTEXT.md if exists (consumed).
 
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: start milestone v[X.Y] [Name]" --files .planning/PROJECT.md "$(node gsd-tools.cjs state-path)"
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: start milestone v[X.Y] [Name]" --files .planning/PROJECT.md "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-path)"
 ```
 
 ## 7. Load Context and Resolve Models
@@ -321,7 +321,7 @@ Success criteria:
 
 **Commit roadmap** (after approval):
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: create milestone v[X.Y] roadmap ([N] phases)" --files .planning/ROADMAP.md "$(node gsd-tools.cjs state-path)" .planning/REQUIREMENTS.md
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: create milestone v[X.Y] roadmap ([N] phases)" --files .planning/ROADMAP.md "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-path)" .planning/REQUIREMENTS.md
 ```
 
 ## 11. Done

@@ -25,7 +25,7 @@ Mark current phase complete and advance to next. This is the natural point where
 Before transition, read project state:
 
 ```bash
-cat "$(node gsd-tools.cjs state-path)" 2>/dev/null
+cat "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-path)" 2>/dev/null
 cat .planning/PROJECT.md 2>/dev/null
 ```
 

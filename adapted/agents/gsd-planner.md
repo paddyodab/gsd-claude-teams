@@ -840,7 +840,7 @@ Extract from init JSON: `planner_model`, `researcher_model`, `checker_model`, `c
 
 Also read STATE.md for position, decisions, blockers:
 ```bash
-cat "$(node gsd-tools.cjs state-path)" 2>/dev/null
+cat "$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-path)" 2>/dev/null
 ```
 
 If STATE.md missing but .planning/ exists, offer to reconstruct or continue without.
