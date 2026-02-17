@@ -1,33 +1,148 @@
 # gsd-claude-teams
 
-A thin adaptation layer for [Get Shit Done](https://github.com/glittercowboy/get-shit-done) that makes GSD plans executable by multiple developers.
+Multi-developer adaptation for [Get Shit Done](https://github.com/gsd-build/get-shit-done) (GSD) — the AI-powered project execution framework for Claude Code.
 
-**Status:** Research / design phase. Not usable yet.
+GSD is designed for a single developer. This layer adds per-developer state isolation and team coordination commands so multiple engineers can work on different phases of the same project simultaneously.
 
-## The Problem
+## Quick Start
 
-GSD produces excellent plans committed to `.planning/` in your repo. But execution assumes a single developer — `STATE.md` tracks one person's position, there's no ownership model, and no handoff convention. Developer B can't pick up Phase 3 while Developer A executes Phase 2.
+### Prerequisites
 
-## Approach
+1. **Claude Code** installed and working
+2. **Vanilla GSD** installed:
+   ```bash
+   npx get-shit-done-cc@latest
+   # Interactive — choose global install, Claude Code
+   ```
 
-Following the [gsd-opencode](https://github.com/rokicool/gsd-opencode) adaptation pattern:
+### Install
 
-- `original/get-shit-done/` — GSD as a git submodule (never modified directly)
-- `adapted/` — Transformed copies of GSD workflows with team-aware state paths
-- `commands/` — Wrapper skills for team coordination (assign, handoff, status, pickup)
-- `scripts/` — Build/transform tooling that rewrites GSD prompts for team use
+```bash
+git clone <this-repo-url> ~/gsd-claude-teams
+node ~/gsd-claude-teams/scripts/install.js
+```
 
-## Key Design Decision
+That's it. The script:
+- Backs up your vanilla GSD install
+- Symlinks the team-adapted version in its place
+- Installs four team coordination commands
+- Runs a smoke test to verify
 
-GSD hardcodes `.planning/` paths in ~90 files. Rather than forking, we maintain a build step that transforms the workflow markdown — rewriting state file paths to support per-developer isolation while keeping shared artifacts (ROADMAP.md, PROJECT.md, REQUIREMENTS.md) in the common `.planning/` root.
+To uninstall and restore vanilla GSD:
+```bash
+node ~/gsd-claude-teams/scripts/install.js --uninstall
+```
 
-## Structure
+To update after someone pushes changes:
+```bash
+cd ~/gsd-claude-teams && git pull
+# Done — the symlink means you're already running the latest
+```
+
+## What GSD Does (30-Second Version)
+
+GSD turns a project idea into a structured execution plan and helps you build it phase by phase. The workflow:
+
+1. **`/gsd:new-project`** — Describe what you're building. GSD creates PROJECT.md, REQUIREMENTS.md, and a phased ROADMAP.md
+2. **`/gsd:plan-phase`** — For each phase, GSD researches the approach and writes detailed implementation plans
+3. **`/gsd:execute-phase`** — GSD executes the plans: writes code, runs tests, commits. You review
+4. **`/gsd:verify-work`** — Validate the built features work correctly
+
+All artifacts live in `.planning/` in your repo. Plans are committed so anyone can see what was built and why.
+
+For the full guide: [GSD User Guide](https://github.com/gsd-build/get-shit-done/blob/main/docs/USER-GUIDE.md)
+
+## What This Layer Adds
+
+Vanilla GSD uses a single `STATE.md` to track progress. If two developers both run GSD, they overwrite each other's state. This layer solves that.
+
+### Per-Developer State Isolation
+
+Each developer gets their own state file (`STATE_pat.md`, `STATE_dustin.md`, etc.) while sharing the project's roadmap, requirements, and plans. When you run GSD commands, they read *your* state file — not a shared one.
+
+### Team Commands
+
+| Command | What It Does |
+|---------|-------------|
+| `/team:assign pat 3` | Claim phase 3 as your own. Creates your state file, optionally creates a branch |
+| `/team:status` | Show who's working on what across all developers |
+| `/team:handoff` | Verify your work, normalize artifacts, create a PR to main |
+| `/team:pickup 3` | Pick up a phase someone else started — get briefed on progress and what's next |
+
+## Workflow for Engineers
+
+### First Time Setup
+
+```
+1. Install (see Quick Start above)
+2. Clone the project repo your team is working on
+3. In Claude Code, run: /team:assign <your-name>
+```
+
+### Daily Workflow
+
+**Starting a new phase:**
+```
+/team:assign <your-name> <phase-number>    # claim the phase
+/gsd:plan-phase                            # plan it (or skip if already planned)
+/gsd:execute-phase                         # build it
+/gsd:verify-work                           # validate it works
+/team:handoff                              # PR to main
+```
+
+**Picking up someone else's work:**
+```
+/team:pickup <phase-number>                # checks out branch, briefs you on status
+/gsd:execute-phase                         # continue execution
+```
+
+**Checking in on the team:**
+```
+/team:status                               # who's on what, what's done, what's blocked
+```
+
+### Parallel Work
+
+Multiple developers can work on different phases at the same time:
+
+- Pat plans and executes Phase 2
+- Greg plans and executes Phase 3
+- Dustin plans and executes Phase 4
+
+This works because each phase has its own directory under `.planning/phases/` and each developer has their own state file. No collisions.
+
+**The one rule: one developer per phase.** Don't have two people executing the same phase simultaneously.
+
+### Session Management
+
+GSD is context-aware across sessions. If you need to stop and come back later:
+
+```
+/gsd:pause-work         # saves your context for later
+# ... next day ...
+/gsd:resume-work        # picks up where you left off
+```
+
+Or just run `/gsd:progress` — it reads your state file and tells you what to do next.
+
+## How It Works Under the Hood
+
+GSD hardcodes `.planning/STATE.md` in ~90 workflow files. Rather than forking GSD, we maintain a build-time transform (`scripts/transform.js`) that rewrites state file paths to support per-developer isolation while keeping shared artifacts (ROADMAP.md, PROJECT.md, REQUIREMENTS.md) in the common `.planning/` root.
 
 ```
 gsd-claude-teams/
-├── original/get-shit-done/     # git submodule — upstream GSD
-├── adapted/                    # transformed GSD workflows (generated, not hand-edited)
-├── commands/team/              # wrapper skills: assign, handoff, status, pickup
-├── scripts/                    # build tooling for path transformation
-└── docs/                       # conventions and design decisions
+├── original/get-shit-done/     # git submodule — upstream GSD (never modified)
+├── adapted/                    # transformed workflows (generated by transform.js)
+├── commands/team/              # team coordination commands
+├── scripts/
+│   ├── transform.js            # builds adapted/ from original/
+│   └── install.js              # one-command setup
+└── docs/
+    └── install-strategy.md     # design decisions
 ```
+
+## Known Limitations
+
+- **`/gsd:update` will overwrite the adapted files.** If you run GSD's built-in updater, it replaces the symlink with fresh vanilla files. Fix: re-run `node scripts/install.js`.
+- **Moving the gsd-claude-teams repo breaks the symlink.** Fix: re-run `node scripts/install.js`.
+- **`/gsd:complete-milestone` should be run by one person** after all developers' phases are done — not while someone is still executing.
