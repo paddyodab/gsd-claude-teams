@@ -89,14 +89,15 @@ function patchGsdTools(content) {
   let patched = content;
   let stats = { statePathReplacements: 0, injectedHelpers: false, injectedCommands: false, agentIdReplacement: false };
 
-  // 1. Inject getDeveloper() + helpers after the first require block
-  //    Find the end of the imports section (after the last require statement)
-  const lastRequireIdx = patched.lastIndexOf("require('");
-  if (lastRequireIdx === -1) {
-    throw new Error('Could not find require statements in gsd-tools.cjs');
+  // 1. Inject getDeveloper() + helpers after the top-level require block
+  //    Must inject at module scope (after the 3 top-level requires), NOT after
+  //    inline require() calls deep in functions (which would scope our helpers wrong)
+  const topLevelRequireMarker = "const { execSync } = require('child_process');";
+  const markerIdx = patched.indexOf(topLevelRequireMarker);
+  if (markerIdx === -1) {
+    throw new Error('Could not find top-level require block in gsd-tools.cjs');
   }
-  // Find the end of the line containing the last require
-  const endOfRequireLine = patched.indexOf('\n', lastRequireIdx);
+  const endOfRequireLine = patched.indexOf('\n', markerIdx);
   patched = patched.slice(0, endOfRequireLine + 1) + GET_DEVELOPER_FN + patched.slice(endOfRequireLine + 1);
   stats.injectedHelpers = true;
 

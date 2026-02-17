@@ -123,6 +123,45 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
+// ─── GSD Teams: per-developer state isolation ────────────────────────────────
+function getDeveloper() {
+  // CLI flag: --developer <name>
+  const flagIdx = process.argv.indexOf('--developer');
+  if (flagIdx !== -1 && process.argv[flagIdx + 1]) {
+    return process.argv[flagIdx + 1];
+  }
+  // Environment variable
+  if (process.env.GSD_DEVELOPER) {
+    return process.env.GSD_DEVELOPER;
+  }
+  // config.json developer field
+  try {
+    const cfgRaw = fs.readFileSync(path.join(process.cwd(), '.planning', 'config.json'), 'utf-8');
+    const cfg = JSON.parse(cfgRaw);
+    if (cfg.developer) return cfg.developer;
+  } catch {}
+  return null;
+}
+
+function resolveStatePath(baseDir) {
+  const dev = getDeveloper();
+  const stateFile = dev ? `STATE_${dev}.md` : 'STATE.md';
+  return path.join(baseDir, stateFile);
+}
+
+function resolveAgentHistoryPath(baseDir) {
+  const dev = getDeveloper();
+  const file = dev ? `agent-history_${dev}.json` : 'agent-history.json';
+  return path.join(baseDir, file);
+}
+
+function resolveCurrentAgentIdPath(baseDir) {
+  const dev = getDeveloper();
+  const file = dev ? `current-agent-id_${dev}.txt` : 'current-agent-id.txt';
+  return path.join(baseDir, file);
+}
+// ─── End GSD Teams injection ─────────────────────────────────────────────────
+
 // ─── Model Profile Table ─────────────────────────────────────────────────────
 
 const MODEL_PROFILES = {
@@ -4337,45 +4376,6 @@ function cmdInitNewProject(cwd, raw) {
 
   // Detect Brave Search API key availability
   const homedir = require('os').homedir();
-
-// ─── GSD Teams: per-developer state isolation ────────────────────────────────
-function getDeveloper() {
-  // CLI flag: --developer <name>
-  const flagIdx = process.argv.indexOf('--developer');
-  if (flagIdx !== -1 && process.argv[flagIdx + 1]) {
-    return process.argv[flagIdx + 1];
-  }
-  // Environment variable
-  if (process.env.GSD_DEVELOPER) {
-    return process.env.GSD_DEVELOPER;
-  }
-  // config.json developer field
-  try {
-    const cfgRaw = fs.readFileSync(path.join(process.cwd(), '.planning', 'config.json'), 'utf-8');
-    const cfg = JSON.parse(cfgRaw);
-    if (cfg.developer) return cfg.developer;
-  } catch {}
-  return null;
-}
-
-function resolveStatePath(baseDir) {
-  const dev = getDeveloper();
-  const stateFile = dev ? `STATE_${dev}.md` : 'STATE.md';
-  return path.join(baseDir, stateFile);
-}
-
-function resolveAgentHistoryPath(baseDir) {
-  const dev = getDeveloper();
-  const file = dev ? `agent-history_${dev}.json` : 'agent-history.json';
-  return path.join(baseDir, file);
-}
-
-function resolveCurrentAgentIdPath(baseDir) {
-  const dev = getDeveloper();
-  const file = dev ? `current-agent-id_${dev}.txt` : 'current-agent-id.txt';
-  return path.join(baseDir, file);
-}
-// ─── End GSD Teams injection ─────────────────────────────────────────────────
   const braveKeyFile = path.join(homedir, '.gsd', 'brave_api_key');
   const hasBraveSearch = !!(process.env.BRAVE_API_KEY || fs.existsSync(braveKeyFile));
 
