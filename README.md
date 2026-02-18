@@ -18,8 +18,9 @@ GSD is designed for a single developer. This layer adds per-developer state isol
 ### Install
 
 ```bash
-git clone <this-repo-url> ~/gsd-claude-teams
-node ~/gsd-claude-teams/scripts/install.js
+git clone <this-repo-url>
+cd gsd-claude-teams
+node scripts/install.js
 ```
 
 That's it. The script:
@@ -30,12 +31,12 @@ That's it. The script:
 
 To uninstall and restore vanilla GSD:
 ```bash
-node ~/gsd-claude-teams/scripts/install.js --uninstall
+node scripts/install.js --uninstall
 ```
 
 To update after someone pushes changes:
 ```bash
-cd ~/gsd-claude-teams && git pull
+git pull    # from the gsd-claude-teams directory
 # Done — the symlink means you're already running the latest
 ```
 
@@ -144,5 +145,5 @@ gsd-claude-teams/
 ## Known Limitations
 
 - **`/gsd:update` will overwrite the adapted files.** If you run GSD's built-in updater, it replaces the symlink with fresh vanilla files. Fix: re-run `node scripts/install.js`.
-- **Moving the gsd-claude-teams repo breaks the symlink.** Fix: re-run `node scripts/install.js`.
+- **Moving the gsd-claude-teams repo breaks the symlink.** Fix: re-run `node scripts/install.js` from the new location.
 - **`/gsd:complete-milestone` should be run by one person** after all developers' phases are done — not while someone is still executing.
