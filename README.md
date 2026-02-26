@@ -25,7 +25,7 @@ node scripts/install.js
 
 That's it. The script:
 - Backs up your vanilla GSD install
-- Symlinks the team-adapted version in its place
+- Copies vanilla as a base, then overlays the team-adapted patches on top
 - Installs four team coordination commands
 - Runs a smoke test to verify
 
@@ -36,8 +36,9 @@ node scripts/install.js --uninstall
 
 To update after someone pushes changes:
 ```bash
-git pull    # from the gsd-claude-teams directory
-# Done — the symlink means you're already running the latest
+cd gsd-claude-teams
+git pull
+node scripts/install.js   # re-overlay the updated adapted files
 ```
 
 ## What GSD Does (30-Second Version)
@@ -148,7 +149,7 @@ GSD is actively maintained. When the upstream library gets a new release, there 
 
 ### If You Run `/gsd:update` or `npx get-shit-done-cc@latest`
 
-**This will break your team setup.** GSD's updater replaces `~/.claude/get-shit-done/` with fresh vanilla files, which nukes the symlink to our adapted version.
+**This will break your team setup.** GSD's updater replaces `~/.claude/get-shit-done/` with fresh vanilla files, overwriting the merged team-adapted version.
 
 **How to tell it happened:** GSD commands still work, but team features (`/team:assign`, `/team:status`, etc.) stop working and state isolation is gone — everyone shares a single STATE.md again.
 
@@ -158,7 +159,7 @@ cd gsd-claude-teams
 node scripts/install.js
 ```
 
-That's it. The install script detects the vanilla directory, backs it up, and re-creates the symlink. Your state files and team commands are restored.
+That's it. The install script detects the vanilla directory, backs it up, copies it as a base, and re-overlays the adapted patches. Your state files and team commands are restored.
 
 **To avoid surprises:** Don't run `/gsd:update` or `npx get-shit-done-cc@latest` without re-running the install script afterward. If you want to update vanilla GSD *and* keep the team layer, use the maintainer workflow below instead.
 
@@ -176,7 +177,7 @@ git submodule update --remote
 node scripts/transform.js
 
 # 3. Verify the transform worked
-node scripts/install.js          # re-links if needed
+node scripts/install.js          # re-overlay adapted patches
 # Test a GSD command in a project repo to make sure nothing broke
 
 # 4. Commit and push
@@ -191,7 +192,7 @@ Everyone else:
 ```bash
 cd gsd-claude-teams
 git pull
-# Done — symlink already points to the updated adapted/ files
+node scripts/install.js   # re-overlay the updated adapted files
 ```
 
 **How often to do this:** Check for updates every week or two while GSD is in active development. You can watch the [GSD repo](https://github.com/gsd-build/get-shit-done) for releases or just pull the submodule periodically.
@@ -200,5 +201,5 @@ git pull
 
 ## Known Limitations
 
-- **Moving the gsd-claude-teams repo breaks the symlink.** Fix: re-run `node scripts/install.js` from the new location.
+- **After moving the gsd-claude-teams repo or pulling changes**, re-run `node scripts/install.js` to re-overlay.
 - **`/gsd:complete-milestone` should be run by one person** after all developers' phases are done — not while someone is still executing.
