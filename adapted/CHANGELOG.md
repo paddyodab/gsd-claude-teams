@@ -6,6 +6,85 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.21.0] - 2026-02-25
+
+### Added
+- YAML frontmatter sync to STATE.md for machine-readable status tracking
+- `/gsd:add-tests` command for post-phase test generation
+- Codex runtime support with skills-first installation
+- Standard `project_context` block in gsd-verifier output
+- Codex changelog and usage documentation
+
+### Changed
+- Improved onboarding UX: installer now suggests `/gsd:new-project` instead of `/gsd:help`
+- Updated Discord invite to vanity URL (discord.gg/gsd)
+- Compressed Nyquist validation layer to align with GSD meta-prompt conventions
+- Requirements propagation now includes `phase_req_ids` from ROADMAP to workflow agents
+- Debug sessions require human verification before resolution
+
+### Fixed
+- Multi-level decimal phase handling (e.g., 72.1.1) with proper regex escaping
+- `/gsd:update` always installs latest package version
+- STATE.md decision corruption and dollar sign handling
+- STATE.md frontmatter mapping for requirements-completed status
+- Progress bar percent clamping to prevent RangeError crashes
+- `--cwd` override support in state-snapshot command
+
+## [1.20.6] - 2025-02-23
+
+### Added
+- Context window monitor hook with WARNING/CRITICAL alerts when agent context usage exceeds thresholds
+- Nyquist validation layer in plan-phase pipeline to catch quality issues before execution
+- Option highlighting and gray area looping in discuss-phase for clearer preference capture
+
+### Changed
+- Refactored installer tools into 11 domain modules for maintainability
+
+### Fixed
+- Auto-advance chain no longer breaks when skills fail to resolve inside Task subagents
+- Gemini CLI workflows and templates no longer incorrectly convert to TOML format
+- Universal phase number parsing handles all formats consistently (decimal phases, plain numbers)
+
+## [1.20.5] - 2026-02-19
+
+### Fixed
+- `/gsd:health --repair` now creates timestamped backup before regenerating STATE.md (#657)
+
+### Changed
+- Subagents now discover and load project CLAUDE.md and skills at spawn time for better project context (#671, #672)
+- Improved context loading reliability in spawned agents
+
+## [1.20.4] - 2026-02-17
+
+### Fixed
+- Executor agents now update ROADMAP.md and REQUIREMENTS.md after each plan completes — previously both documents stayed unchecked throughout milestone execution
+- New `requirements mark-complete` CLI command enables per-plan requirement tracking instead of waiting for phase completion
+- Executor final commit includes ROADMAP.md and REQUIREMENTS.md
+
+## [1.20.3] - 2026-02-16
+
+### Fixed
+- Milestone audit now cross-references three independent sources (VERIFICATION.md + SUMMARY frontmatter + REQUIREMENTS.md traceability) instead of single-source phase status checks
+- Orphaned requirements (in traceability table but absent from all phase VERIFICATIONs) detected and forced to `unsatisfied`
+- Integration checker receives milestone requirement IDs and maps findings to affected requirements
+- `complete-milestone` gates on requirements completion before archival — surfaces unchecked requirements with proceed/audit/abort options
+- `plan-milestone-gaps` updates REQUIREMENTS.md traceability table (phase assignments, checkbox resets, coverage count) and includes it in commit
+- Gemini CLI: escape `${VAR}` shell variables in agent bodies to prevent template validation failures
+
+## [1.20.2] - 2026-02-16
+
+### Fixed
+- Requirements tracking chain now strips bracket syntax (`[REQ-01, REQ-02]` → `REQ-01, REQ-02`) across all agents
+- Verifier cross-references requirement IDs from PLAN frontmatter instead of only grepping REQUIREMENTS.md by phase number
+- Orphaned requirements (mapped to phase in REQUIREMENTS.md but unclaimed by any plan) are detected and flagged
+
+### Changed
+- All `requirements` references across planner, templates, and workflows enforce MUST/REQUIRED/CRITICAL language — no more passive suggestions
+- Plan checker now **fails** (blocking, not warning) when any roadmap requirement is absent from all plans
+- Researcher receives phase-specific requirement IDs and must output a `<phase_requirements>` mapping table
+- Phase requirement IDs extracted from ROADMAP and passed through full chain: researcher → planner → checker → executor → verifier
+- Verification report requirements table expanded with Source Plan, Description, and Evidence columns
+
 ## [1.20.1] - 2026-02-16
 
 ### Fixed
@@ -1279,7 +1358,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - YOLO mode for autonomous execution
 - Interactive mode with checkpoints
 
-[Unreleased]: https://github.com/glittercowboy/get-shit-done/compare/v1.20.1...HEAD
+[Unreleased]: https://github.com/glittercowboy/get-shit-done/compare/v1.21.0...HEAD
+[1.21.0]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.21.0
+[1.20.6]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.20.6
+[1.20.5]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.20.5
+[1.20.4]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.20.4
+[1.20.3]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.20.3
+[1.20.2]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.20.2
 [1.20.1]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.20.1
 [1.20.0]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.20.0
 [1.19.2]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.19.2
